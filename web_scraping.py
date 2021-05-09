@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def url_request(url):
+def url_request(url: str) -> 'url response':
+    #print('URL: ', url)
     response = requests.get(url)
     try:
         response.raise_for_status()
@@ -12,36 +13,46 @@ def url_request(url):
     return response
 
 
-def write_to_file(text):
-    "Writing text to a file"
-    with open('composing_programs.txt', 'wb') as f: # TODO: create a filename by parsing the URL given by user in stdin 
+def write_to_file(text: list) -> None:
+    with open('composing_programs.txt', 'w') as f: # TODO: create a filename by parsing the URL given by user in stdin 
         for page in text:
             f.write(page)
 
 
-def get_links(soup):
+def get_links(soup: BeautifulSoup) -> list:
+    #print('Soup object: ', soup)
     all_links = soup.find_all('a')
-    urls = []
+    #print('a tags on page: ', all_links)
+    links = []
     for link in all_links:
-        urls.append(link.get('href'))
+        if './pages/' in link.get('href'):
+            # if statement checks if the link is to a page of the book,
+            # if yes, then the '.' is stripped from the beginning, and then the
+            # main url to the website is concatenated to the beginning of the link.
+            # Then the full link is added to the links list. 
+            links.append(url + link.get('href').strip('./'))
+            
     
-    return urls
+    #print('get_links function: ', links)
+    return links
 
 
-def get_all_text(soup):
+def get_all_text(soup: BeautifulSoup) -> str:
     text = soup.get_text()
     return text
 
 
-def parse_html(response):
-    soup = BeautifulSoup(response, 'html.parser')
-    urls = get_links(soup)
+def parse_html(url: str) -> None:
+    #print('URL request: ', url_request(url).text)
+    soup = BeautifulSoup(url_request(url).text, 'html.parser')
+    links = get_links(soup)
+    print('parse_html: ', links)
     text = []
 
     # Loop through internal site links to create soup objects for each request response
     soups = []
-    for url in urls:
-        soups.append(BeautifulSoup(url_request(url), 'html.parser'))
+    for link in links:
+        soups.append(BeautifulSoup(url_request(link).text, 'html.parser'))
 
     # Loop through list of soup objects and get all text from them
     for soup in soups:
@@ -51,13 +62,16 @@ def parse_html(response):
 
 
 if __name__ == '__main__':
-    url = ''
-    if input():
-        url = input()
+    url = str(input('Enter a URL: '))
     
-    response = url_request(url)
+    if 'http://' in url or 'https://' in url:
+        parse_html(url)
 
-    # uncomment line below if you want the response to be written to a file
-    #write_to_file(response)
+    # while ('http://' not in url) or ('https://' not in url):
+    #     url = input('Enter a proper URL: ')
+    #     if 'http://' in url or 'https://' in url:
+    #         parse_html(url)
+        
 
-    parse_html(response)
+
+    
