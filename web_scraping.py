@@ -3,7 +3,7 @@ import time
 from bs4 import BeautifulSoup
 
 
-def url_request(url: str) -> 'url response':
+def url_request(url: 'str') -> 'url_response':
     #print('URL: ', url)
     response = requests.get(url)
     try:
@@ -14,14 +14,14 @@ def url_request(url: str) -> 'url response':
     return response
 
 
-def write_to_file(text: list) -> None:
+def write_to_file(text: 'list') -> 'None':
     with open('composing_programs.txt', 'wb') as f: # TODO: create a filename by parsing the URL given by user in stdin 
         for page in text:
             f.write(bytes(page, 'utf-8'))
             
 
 
-def get_links(soup: BeautifulSoup) -> list:
+def get_links(soup: 'BeautifulSoup') -> 'list':
     #print('Soup object: ', soup)
     all_links = soup.find_all('a')
     #print('a tags on page: ', all_links)
@@ -39,12 +39,12 @@ def get_links(soup: BeautifulSoup) -> list:
     return links
 
 
-def get_all_text(soup: BeautifulSoup) -> str:
+def get_all_text(soup: 'BeautifulSoup') -> 'str':
     text = soup.get_text()
     return text
 
 
-def parse_html(url: str) -> None:
+def parse_html(url: 'str') -> 'None':
     #print('URL request: ', url_request(url).text)
     soup = BeautifulSoup(url_request(url).text, 'html.parser')
     links = get_links(soup)
