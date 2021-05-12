@@ -23,7 +23,7 @@ def write_to_file(text: 'list') -> 'None':
 
 def get_links(soup: 'BeautifulSoup') -> 'list':
     #print('Soup object: ', soup)
-    all_links = soup.find_all('a')
+    all_links = set(soup.find_all('a'))
     #print('a tags on page: ', all_links)
     links = []
     for link in all_links:
