@@ -1,4 +1,5 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 
 
@@ -14,9 +15,10 @@ def url_request(url: str) -> 'url response':
 
 
 def write_to_file(text: list) -> None:
-    with open('composing_programs.txt', 'w') as f: # TODO: create a filename by parsing the URL given by user in stdin 
+    with open('composing_programs.txt', 'wb') as f: # TODO: create a filename by parsing the URL given by user in stdin 
         for page in text:
-            f.write(page)
+            f.write(bytes(page, 'utf-8'))
+            
 
 
 def get_links(soup: BeautifulSoup) -> list:
@@ -53,6 +55,8 @@ def parse_html(url: str) -> None:
     soups = []
     for link in links:
         soups.append(BeautifulSoup(url_request(link).text, 'html.parser'))
+        print('sleeping')
+        time.sleep(1)
 
     # Loop through list of soup objects and get all text from them
     for soup in soups:
